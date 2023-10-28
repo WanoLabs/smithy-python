@@ -50,12 +50,19 @@ jobs:
     name: Codegen Java 17 / Python ${{ matrix.python-version }}
 
     steps:
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::726378542995:role/GithubActionsRole
+          role-session-name: SmithyPython-GithubCI
+          aws-region: us-east-1
       - uses: actions/checkout@v3
 
       - name: Download Coretto 17 JDK
         run: |
           download_url="https://corretto.aws/downloads/latest/amazon-corretto-17-x64-linux-jdk.tar.gz"
           wget -O $RUNNER_TEMP/java_package.tar.gz $download_url
+      
 
       - name: Set up Coretto 17 JDK
         uses: actions/setup-java@v3
@@ -98,4 +105,6 @@ jobs:
           python${{ matrix.python-version }} -m pip install --upgrade mypy pytest pytest-asyncio
 
       - name: clean and build with all optional tools installed
-        run: cd codegen && ./gradlew clean build -Plog-tests
+        run: |
+          export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain kaya --domain-owner 726378542995 --region us-east-1 --query authorizationToken --output text`
+          cd codegen && ./gradlew clean build -Plog-tests

@@ -140,10 +140,10 @@ subprojects {
         publishing {
             repositories {
                 mavenCentral {
-                    url = uri("https://aws.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                    url = uri("https://kaya-726378542995.d.codeartifact.us-east-1.amazonaws.com/maven/kaya-java/")
                     credentials {
-                        username = sonatypeUser
-                        password = sonatypePassword
+                        username = "aws"
+                        password = System.getenv("CODEARTIFACT_AUTH_TOKEN")
                     }
                 }
             }
